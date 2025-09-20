@@ -849,9 +849,7 @@ from exemplo e
 
 <h1><b>8.1. JSON_ARRAYAGG</b></h1>
 
-<p>
-	Cria uma coluna de arrays com elementos agrupados por categorias. Sintaxe:
-</p>
+<p>Cria uma coluna de arrays com elementos agrupados por categorias. Sintaxe:</p>
 
 ```sql
 SELECT
@@ -918,7 +916,7 @@ group by u.userId, u.name;
 
 <table align="center"><thead><tr><th>userId</th><th>name</th><th>questions_array</th><th>answers_array</th></tr></thead><tbody><tr><td>1</td><td>Ana</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;02/04/1987&quot;, &quot;Feminino&quot;, &quot;RJ&quot;, &quot;Rio de Janeiro&quot; ]</td></tr><tr><td>2</td><td>Beto</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;10/09/1991&quot;, &quot;Masculino&quot;, &quot;SP&quot;, &quot;São Paulo&quot; ]</td></tr><tr><td>3</td><td>Carlos</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;31/12/1989&quot;, &quot;Masculino&quot;, &quot;MG&quot;, &quot;Belo Horizonte&quot; ]</td></tr></tbody></table>
 
-<p><b>Útil</b> quando não se quer estourar a cardinalidade do resultado, retornar toda a informação e permitir algum nível de manipulação posterior via consulta. Pode-se mesclar futuramente dentro de uma subconsulta para retornar uma ou outra pergunta posicionalmente:</p>
+<p><b>Útil</b> quando não se quer estourar a cardinalidade do resultado, retornar toda a informação e permitir algum nível de manipulação posterior via consulta. Muito porque se mantém a ordenação dos elementos quando múltiplas colunas de arrays são chamadas (no mesmo registro, 1º elemento de uma col array corresponde ao 1º elemento de outra col array). Pode-se mesclar futuramente dentro de uma subconsulta para retornar uma ou outra pergunta posicionalmente:</p>
 
 ```sql
 select 
@@ -940,3 +938,94 @@ from (
 
 <table align="center"><thead><tr><th>name</th><th>pergunta 1</th><th>resposta 1</th></tr></thead><tbody><tr><td>Ana</td><td>Nascimento</td><td>02/04/1987</td></tr><tr><td>Beto</td><td>Nascimento</td><td>10/09/1991</td></tr><tr><td>Carlos</td><td>Nascimento</td><td>31/12/1989</td></tr></tbody></table>
 
+<h1><b>8.2. JSON_OBJECTAGG</b></h1>
+
+<p>Função irmã de JSON_ARRAYAGG, mas que retorna um objeto chaveado. Sintaxe:</p>
+
+```sql
+SELECT
+  col_agrup
+, JSON_ARRAYAGG(col_chave, col_valor) as `objs`
+FROM TABLE
+GROUP BY col_agrup
+```
+
+<p><b>Exemplo: </b>Supondo as tabelas abaixo, retornar os usuários e seus formulários preenchidos de modo semi-estruturado (objetos JSON):</p>
+
+```sql
+create table users (
+    userId int primary key auto_increment,
+    name varchar(191) not null,
+    email varchar(50) not null
+);
+
+insert into users (userId, name, email) values
+    (1, 'Ana', 'ana.ana@email.com'),
+    (2, 'Beto', 'beto123@email.com'),
+    (3, 'Carlos', 'car_lupi10@gmail.com');
+```
+
+<table align="center"><thead><tr><th>userId</th><th>name</th><th>email</th></tr></thead><tbody><tr><td>100</td><td>Ana</td><td>ana.ana@email.com</td></tr><tr><td>101</td><td>Beto</td><td>beto123@email.com</td></tr><tr><td>102</td><td>Carlos</td><td>car_vega@gmail.com</td></tr></tbody></table>
+
+```sql
+create table forms (
+    formId int primary key auto_increment,
+    userId int not null,
+    question varchar(80),
+    answer varchar(80),
+    foreign key (userId) references users(userId)
+);
+
+insert into forms (userId, question, answer) values
+    (1, 'Nascimento', '02/04/1987'),
+    (1, 'Gênero', 'Feminino'),
+    (1, 'Estado', 'RJ'),
+    (1, 'Cidade', 'Rio de Janeiro'),
+    (2, 'Nascimento', '10/09/1991'),
+    (2, 'Gênero', 'Masculino'),
+    (2, 'Estado', 'SP'),
+    (2, 'Cidade', 'São Paulo'),
+    (3, 'Nascimento', '31/12/1989'),
+    (3, 'Gênero', 'Masculino'),
+    (3, 'Estado', 'MG'),
+    (3, 'Cidade', 'Belo Horizonte');
+```
+
+<table align="center"><thead><tr><th>formId</th><th>userId</th><th>question</th><th>answer</th></tr></thead><tbody><tr><td>1</td><td>100</td><td>Nascimento</td><td>02/04/1987</td></tr><tr><td>2</td><td>100</td><td>Gênero</td><td>Feminino</td></tr><tr><td>3</td><td>100</td><td>Estado</td><td>RJ</td></tr><tr><td>4</td><td>100</td><td>Cidade</td><td>Rio de Janeiro</td></tr><tr><td>5</td><td>101</td><td>Nascimento</td><td>10/09/1991</td></tr><tr><td>6</td><td>101</td><td>Gênero</td><td>Masculino</td></tr><tr><td>7</td><td>101</td><td>Estado</td><td>SP</td></tr><tr><td>8</td><td>101</td><td>Cidade</td><td>São Paulo</td></tr><tr><td>9</td><td>102</td><td>Nascimento</td><td>31/01/2000</td></tr><tr><td>10</td><td>102</td><td>Gênero</td><td>Masculino</td></tr><tr><td>11</td><td>102</td><td>Estado</td><td>MG</td></tr><tr><td>12</td><td>102</td><td>Cidade</td><td>Belo Horizonte</td></tr></tbody></table>
+
+```sql
+select 
+  u.userId
+, u.name
+, json_objectagg(question, answer) as `forms_obj`
+from users u 
+    join forms f
+group by u.userId
+;
+```
+
+<table align="center"><thead><tr><th>userId</th><th>name</th><th>forms_obj</th></tr></thead><tbody><tr><td>1</td><td>Ana</td><td>{ &quot;Cidade&quot;: &quot;São Paulo&quot;, &quot;Estado&quot;: &quot;SP&quot;, &quot;Gênero&quot;: &quot;Masculino&quot;, &quot;Nascimento&quot;: &quot;10/09/1991&quot; }</td></tr><tr><td>2</td><td>Beto</td><td>{ &quot;Cidade&quot;: &quot;Rio de Janeiro&quot;, &quot;Estado&quot;: &quot;RJ&quot;, &quot;Gênero&quot;: &quot;Feminino&quot;, &quot;Nascimento&quot;: &quot;10/09/1991&quot; }</td></tr><tr><td>3</td><td>Carlos</td><td>{ &quot;Cidade&quot;: &quot;São Paulo&quot;, &quot;Estado&quot;: &quot;MG&quot;, &quot;Gênero&quot;: &quot;Masculino&quot;, &quot;Nascimento&quot;: &quot;31/12/1989&quot; }</td></tr></tbody></table>
+
+<p><b>Útil</b> quando há necessidade de retornar registros únicos (users, produtos, etc) sem repetições, mas que outra informação necessária pode estourar a cardinalidade. Evita múltiplos JOINs o que pode tornar mais viável a consulta. Na situação de formulário de perguntas, por exemplo, para cada pergunta seria necessária um JOIN filtrando somente a pergunta referente a coluna respectiva, lenvando ao scans desnecessários dentro da mesma tabela. Bastaria agregar por um objeto e consultar dentro dos dados semi-estruturados pela chave (JSON_EXTRACT) para gerar as colunas de respostas:</p>
+
+```sql
+select 
+  a.userId
+, a.name
+, a.forms_obj ->> '$."Estado"' as Estado
+, a.forms_obj ->> '$."Cidade"' as Cidade
+, a.forms_obj ->> '$."Gênero"' as Gênero
+, a.forms_obj ->> '$."Nascimento"' as Nascimento
+from (
+    select 
+      u.userId
+    , u.name
+    , json_objectagg(question, answer) as `forms_obj`
+    from users u 
+        join forms f
+    group by u.userId
+) as a
+;
+```
+
+<table align="center"><thead><tr><th>userId</th><th>name</th><th>Estado</th><th>Cidade</th><th>Gênero</th><th>Nascimento</th></tr></thead><tbody><tr><td>1</td><td>Ana</td><td>SP</td><td>São Paulo</td><td>Masculino</td><td>10/09/1991</td></tr><tr><td>2</td><td>Beto</td><td>RJ</td><td>Rio de Janeiro</td><td>Feminino</td><td>10/09/1991</td></tr><tr><td>3</td><td>Carlos</td><td>MG</td><td>São Paulo</td><td>Masculino</td><td>31/12/1989</td></tr></tbody></table>

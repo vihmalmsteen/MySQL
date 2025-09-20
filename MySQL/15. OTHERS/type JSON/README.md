@@ -207,6 +207,87 @@ select json_valid('["1"]') 	as `validacao`, 'exemplo 4' as `exemplo`;
 
 <table align="center"><thead><tr><th>validacao</th><th>exemplo</th></tr></thead><tbody><tr><td>0</td><td>exemplo 1</td></tr><tr><td>1</td><td>exemplo 2</td></tr><tr><td>1</td><td>exemplo 3</td></tr><tr><td>1</td><td>exemplo 4</td></tr></tbody></table>
 
+<h4><b>0.7 JSON_ARRAYAGG</b></h4>
+
+```sql
+create table forms (
+    formId int primary key auto_increment,
+    userId int not null,
+    question varchar(80),
+    answer varchar(80),
+    foreign key (userId) references users(userId)
+);
+
+insert into forms (userId, question, answer) values
+    (1, 'Nascimento', '02/04/1987'),
+    (1, 'Gênero', 'Feminino'),
+    (1, 'Estado', 'RJ'),
+    (1, 'Cidade', 'Rio de Janeiro'),
+    
+    (2, 'Nascimento', '10/09/1991'),
+    (2, 'Gênero', 'Masculino'),
+    (2, 'Estado', 'SP'),
+    (2, 'Cidade', 'São Paulo'),
+    
+    (3, 'Nascimento', '31/12/1989'),
+    (3, 'Gênero', 'Masculino'),
+    (3, 'Estado', 'MG'),
+    (3, 'Cidade', 'Belo Horizonte');
+```
+
+<table align="center"><thead><tr><th>formId</th><th>userId</th><th>question</th><th>answer</th></tr></thead><tbody><tr><td>1</td><td>100</td><td>Nascimento</td><td>02/04/1987</td></tr><tr><td>2</td><td>100</td><td>Gênero</td><td>Feminino</td></tr><tr><td>3</td><td>100</td><td>Estado</td><td>RJ</td></tr><tr><td>4</td><td>100</td><td>Cidade</td><td>Rio de Janeiro</td></tr><tr><td>5</td><td>101</td><td>Nascimento</td><td>10/09/1991</td></tr><tr><td>6</td><td>101</td><td>Gênero</td><td>Masculino</td></tr><tr><td>7</td><td>101</td><td>Estado</td><td>SP</td></tr><tr><td>8</td><td>101</td><td>Cidade</td><td>São Paulo</td></tr><tr><td>9</td><td>102</td><td>Nascimento</td><td>31/01/2000</td></tr><tr><td>10</td><td>102</td><td>Gênero</td><td>Masculino</td></tr><tr><td>11</td><td>102</td><td>Estado</td><td>MG</td></tr><tr><td>12</td><td>102</td><td>Cidade</td><td>Belo Horizonte</td></tr></tbody></table>
+
+```sql
+select 
+  userId
+, json_arrayagg(question) as `questions`
+, json_arrayagg(answer) as `answers`
+from forms
+group by userId;
+```
+
+<table align="center"><thead><tr><th>userId</th><th>questions</th><th>answers</th></tr></thead><tbody><tr><td>1</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;02/04/1987&quot;, &quot;Feminino&quot;, &quot;RJ&quot;, &quot;Rio de Janeiro&quot; ]</td></tr><tr><td>2</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;10/09/1991&quot;, &quot;Masculino&quot;, &quot;SP&quot;, &quot;São Paulo&quot; ]</td></tr><tr><td>3</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;31/12/1989&quot;, &quot;Masculino&quot;, &quot;MG&quot;, &quot;Belo Horizonte&quot; ]</td></tr></tbody></table>
+
+<h4><b>0.8 JSON_OBJECTAGG</b></h4>
+
+```sql
+create table forms (
+    formId int primary key auto_increment,
+    userId int not null,
+    question varchar(80),
+    answer varchar(80),
+    foreign key (userId) references users(userId)
+);
+
+insert into forms (userId, question, answer) values
+    (1, 'Nascimento', '02/04/1987'),
+    (1, 'Gênero', 'Feminino'),
+    (1, 'Estado', 'RJ'),
+    (1, 'Cidade', 'Rio de Janeiro'),
+    
+    (2, 'Nascimento', '10/09/1991'),
+    (2, 'Gênero', 'Masculino'),
+    (2, 'Estado', 'SP'),
+    (2, 'Cidade', 'São Paulo'),
+    
+    (3, 'Nascimento', '31/12/1989'),
+    (3, 'Gênero', 'Masculino'),
+    (3, 'Estado', 'MG'),
+    (3, 'Cidade', 'Belo Horizonte');
+```
+
+<table align="center"><thead><tr><th>formId</th><th>userId</th><th>question</th><th>answer</th></tr></thead><tbody><tr><td>1</td><td>100</td><td>Nascimento</td><td>02/04/1987</td></tr><tr><td>2</td><td>100</td><td>Gênero</td><td>Feminino</td></tr><tr><td>3</td><td>100</td><td>Estado</td><td>RJ</td></tr><tr><td>4</td><td>100</td><td>Cidade</td><td>Rio de Janeiro</td></tr><tr><td>5</td><td>101</td><td>Nascimento</td><td>10/09/1991</td></tr><tr><td>6</td><td>101</td><td>Gênero</td><td>Masculino</td></tr><tr><td>7</td><td>101</td><td>Estado</td><td>SP</td></tr><tr><td>8</td><td>101</td><td>Cidade</td><td>São Paulo</td></tr><tr><td>9</td><td>102</td><td>Nascimento</td><td>31/01/2000</td></tr><tr><td>10</td><td>102</td><td>Gênero</td><td>Masculino</td></tr><tr><td>11</td><td>102</td><td>Estado</td><td>MG</td></tr><tr><td>12</td><td>102</td><td>Cidade</td><td>Belo Horizonte</td></tr></tbody></table>
+
+```sql
+select 
+  userId
+, json_objectagg(question, answer) as `questions_answers`
+from forms
+group by userId;
+```
+
+<table align="center"><thead><tr><th>userId</th><th>questions_answers</th></tr></thead><tbody><tr><td>1</td><td>{ &quot;Cidade&quot;: &quot;Rio de Janeiro&quot;, &quot;Estado&quot;: &quot;RJ&quot;, &quot;Gênero&quot;: &quot;Feminino&quot;, &quot;Nascimento&quot;: &quot;02/04/1987&quot; }</td></tr><tr><td>2</td><td>{ &quot;Cidade&quot;: &quot;São Paulo&quot;, &quot;Estado&quot;: &quot;SP&quot;, &quot;Gênero&quot;: &quot;Masculino&quot;, &quot;Nascimento&quot;: &quot;10/09/1991&quot; }</td></tr><tr><td>3</td><td>{ &quot;Cidade&quot;: &quot;Belo Horizonte&quot;, &quot;Estado&quot;: &quot;MG&quot;, &quot;Gênero&quot;: &quot;Masculino&quot;, &quot;Nascimento&quot;: &quot;31/12/1989&quot; }</td></tr></tbody></table>
+
 <h1><b>1. CONSULTANDO JSON: json_extract, json_unquote</b></h1>
 
 <p align="justify">Supondo a seguinte tabela "<b>pedidos</b>":</p>

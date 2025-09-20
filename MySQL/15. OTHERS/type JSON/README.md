@@ -835,13 +835,11 @@ from exemplo e
 
 <h1><b>8. FUNÇÕES AGREGADORAS EM JSON</b></h1>
 
-<p>
-	Funções de agregação <b>GROUP BY</b> assim como <b>SUM</b>, <b>MEAN</b>, <b>GROUP_CONCAT</b>, etc. Mas, que permite o retorno de estruturas JSON.
-</p>
+<p align="justify">Funções de agregação <b>GROUP BY</b> assim como <b>SUM</b>, <b>MEAN</b>, <b>GROUP_CONCAT</b>, etc. Mas, que permite o retorno de estruturas JSON.</p>
 
 <h1><b>8.1. JSON_ARRAYAGG</b></h1>
 
-<p>Cria uma coluna de arrays com elementos agrupados por categorias. Sintaxe:</p>
+<p align="justify">Cria uma coluna de arrays com elementos agrupados por categorias. Sintaxe:</p>
 
 ```sql
 SELECT
@@ -852,7 +850,7 @@ FROM TABLE
 GROUP BY col_agrup_1, col_agrup_2
 ```
 
-<p><b>Exemplo: </b>Supondo as tabelas abaixo, retornar os usuários e suas perguntas e respostas de formulário, <b>sem estourar a cardinalidade</b>:</p>
+<p align="justify"><b>Exemplo: </b>Supondo as tabelas abaixo, retornar os usuários e suas perguntas e respostas de formulário, <b>sem estourar a cardinalidade</b>:</p>
 
 ```sql
 create table users (
@@ -908,7 +906,7 @@ group by u.userId, u.name;
 
 <table align="center"><thead><tr><th>userId</th><th>name</th><th>questions_array</th><th>answers_array</th></tr></thead><tbody><tr><td>1</td><td>Ana</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;02/04/1987&quot;, &quot;Feminino&quot;, &quot;RJ&quot;, &quot;Rio de Janeiro&quot; ]</td></tr><tr><td>2</td><td>Beto</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;10/09/1991&quot;, &quot;Masculino&quot;, &quot;SP&quot;, &quot;São Paulo&quot; ]</td></tr><tr><td>3</td><td>Carlos</td><td>[ &quot;Nascimento&quot;, &quot;Gênero&quot;, &quot;Estado&quot;, &quot;Cidade&quot; ]</td><td>[ &quot;31/12/1989&quot;, &quot;Masculino&quot;, &quot;MG&quot;, &quot;Belo Horizonte&quot; ]</td></tr></tbody></table>
 
-<p><b>Útil</b> quando não se quer estourar a cardinalidade do resultado, retornar toda a informação e permitir algum nível de manipulação posterior via consulta. Muito porque se mantém a ordenação dos elementos quando múltiplas colunas de arrays são chamadas (no mesmo registro, 1º elemento de uma col array corresponde ao 1º elemento de outra col array). Pode-se mesclar futuramente dentro de uma subconsulta para retornar uma ou outra pergunta posicionalmente:</p>
+<p align="justify"><b>Útil</b> quando não se quer estourar a cardinalidade do resultado, retornar toda a informação e permitir algum nível de manipulação posterior via consulta. Muito porque se mantém a ordenação dos elementos quando múltiplas colunas de arrays são chamadas (no mesmo registro, 1º elemento de uma col array corresponde ao 1º elemento de outra col array). Pode-se mesclar futuramente dentro de uma subconsulta para retornar uma ou outra pergunta posicionalmente:</p>
 
 ```sql
 select 
@@ -932,7 +930,7 @@ from (
 
 <h1><b>8.2. JSON_OBJECTAGG</b></h1>
 
-<p>Função irmã de JSON_ARRAYAGG, mas que retorna um objeto chaveado. Sintaxe:</p>
+<p align="justify">Função irmã de JSON_ARRAYAGG, mas que retorna um objeto chaveado. Sintaxe:</p>
 
 ```sql
 SELECT
@@ -942,7 +940,7 @@ FROM TABLE
 GROUP BY col_agrup
 ```
 
-<p><b>Exemplo: </b>Supondo as tabelas abaixo, retornar os usuários e seus formulários preenchidos de modo semi-estruturado (objetos JSON):</p>
+<p align="justify"><b>Exemplo: </b>Supondo as tabelas abaixo, retornar os usuários e seus formulários preenchidos de modo semi-estruturado (objetos JSON):</p>
 
 ```sql
 create table users (
@@ -998,7 +996,7 @@ group by u.userId
 
 <table align="center"><thead><tr><th>userId</th><th>name</th><th>forms_obj</th></tr></thead><tbody><tr><td>1</td><td>Ana</td><td>{ &quot;Cidade&quot;: &quot;São Paulo&quot;, &quot;Estado&quot;: &quot;SP&quot;, &quot;Gênero&quot;: &quot;Masculino&quot;, &quot;Nascimento&quot;: &quot;10/09/1991&quot; }</td></tr><tr><td>2</td><td>Beto</td><td>{ &quot;Cidade&quot;: &quot;Rio de Janeiro&quot;, &quot;Estado&quot;: &quot;RJ&quot;, &quot;Gênero&quot;: &quot;Feminino&quot;, &quot;Nascimento&quot;: &quot;10/09/1991&quot; }</td></tr><tr><td>3</td><td>Carlos</td><td>{ &quot;Cidade&quot;: &quot;São Paulo&quot;, &quot;Estado&quot;: &quot;MG&quot;, &quot;Gênero&quot;: &quot;Masculino&quot;, &quot;Nascimento&quot;: &quot;31/12/1989&quot; }</td></tr></tbody></table>
 
-<p><b>Útil</b> quando há necessidade de retornar registros únicos (users, produtos, etc) sem repetições, mas que outra informação necessária pode estourar a cardinalidade. Evita múltiplos JOINs o que pode tornar mais viável a consulta. Na situação de formulário de perguntas, por exemplo, para cada pergunta seria necessária um JOIN filtrando somente a pergunta referente a coluna respectiva, lenvando ao scans desnecessários dentro da mesma tabela. Bastaria agregar por um objeto e consultar dentro dos dados semi-estruturados pela chave (JSON_EXTRACT) para gerar as colunas de respostas:</p>
+<p align="justify"><b>Útil</b> quando há necessidade de retornar registros únicos (users, produtos, etc) sem repetições, mas que outra informação necessária pode estourar a cardinalidade. Evita múltiplos JOINs o que pode tornar mais viável a consulta. Na situação de formulário de perguntas, por exemplo, para cada pergunta seria necessária um JOIN filtrando somente a pergunta referente a coluna respectiva, lenvando ao scans desnecessários dentro da mesma tabela. Bastaria agregar por um objeto e consultar dentro dos dados semi-estruturados pela chave (JSON_EXTRACT) para gerar as colunas de respostas:</p>
 
 ```sql
 select 

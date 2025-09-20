@@ -1,11 +1,3 @@
-# Estudo futuro -> JSON_SET
-
-A função JSON_SET do MySQL é utilizada para atualizar ou adicionar dados em um documento JSON em uma coluna do tipo JSON. Ela permite que você modifique o conteúdo de objetos JSON ao especificar um ou mais caminhos (ou chaves) para os quais você deseja atribuir novos valores.
-
-<h1><b></b></h1>
-<p align="justify"></p>
-<center></center>
-
 <h1><b>0. Exemplos rápidos</b></h1>
 
 <h4><b>0.1 JSON_OVERLAPS</b></h4>
